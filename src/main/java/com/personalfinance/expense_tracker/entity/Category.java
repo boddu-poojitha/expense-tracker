@@ -18,6 +18,13 @@ public class Category {
 	private String description;
 	
 	
+	
+	public long getCategoryId() {
+		return categoryId;
+	}
+	public void setCategoryId(long categoryId) {
+		this.categoryId = categoryId;
+	}
 	@OneToMany(mappedBy = "category")
 	private List<Expense> expenses;
 	

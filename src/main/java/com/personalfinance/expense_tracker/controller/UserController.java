@@ -11,38 +11,39 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.personalfinance.expense_tracker.entity.User;
+import com.personalfinance.expense_tracker.dto.UserDTO;
 import com.personalfinance.expense_tracker.service.UserService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
 
-	
-	private final UserService userService;
+    private final UserService userService;
 
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
     @PostMapping
-    public User registerUser(@RequestBody User user) {
-        return userService.registerUser(user);
+    public UserDTO registerUser(@Valid @RequestBody UserDTO userDTO) {
+        return userService.registerUser(userDTO);
     }
 
     @GetMapping
-    public List<User> getAllUsers() {
+    public List<UserDTO> getAllUsers() {
         return userService.getAllUsers();
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable long id) {
+    public UserDTO getUserById(@PathVariable long id) {
         return userService.getUserById(id);
     }
 
     @PutMapping
-    public User updateUser(@RequestBody User user) {
-        return userService.updateUser(user);
+    public UserDTO updateUser(@Valid @RequestBody UserDTO userDTO) {
+        return userService.updateUser(userDTO);
     }
 
     @DeleteMapping("/{id}")

@@ -21,6 +21,9 @@ public class Expense {
 	private String note;
 	private String paymentMethod;
 	
+	public Expense() {
+	}
+	
 	@ManyToOne
 	@JoinColumn(name = "userId")
 	private User user;
@@ -29,6 +32,31 @@ public class Expense {
 	@JoinColumn(name = "categoryId")
 	private Category category;
 	
+	
+	
+	public long getExpenseId() {
+	    return expenseId;
+	}
+
+	public void setExpenseId(long expenseId) {
+	    this.expenseId = expenseId;
+	}
+
+	public User getUser() {
+	    return user;
+	}
+
+	public void setUser(User user) {
+	    this.user = user;
+	}
+
+	public Category getCategory() {
+	    return category;
+	}
+
+	public void setCategory(Category category) {
+	    this.category = category;
+	}
 	public String getTitle() {
 		return title;
 	}

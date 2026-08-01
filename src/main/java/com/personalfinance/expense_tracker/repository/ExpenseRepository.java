@@ -6,6 +6,4 @@ import com.personalfinance.expense_tracker.entity.Expense;
 
 public interface ExpenseRepository extends JpaRepository<Expense, Long>{
 	
-
-	
 }

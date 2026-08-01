@@ -2,18 +2,17 @@ package com.personalfinance.expense_tracker.service;
 
 import java.util.List;
 
-import com.personalfinance.expense_tracker.entity.Category;
+import com.personalfinance.expense_tracker.dto.CategoryDTO;
 
 public interface CategoryService {
 
+    CategoryDTO addCategory(CategoryDTO categoryDTO);
 
-	Category addCategory(Category category);
+    List<CategoryDTO> getAllCategories();
 
-    List<Category> getAllCategories();
+    CategoryDTO getCategoryById(long categoryId);
 
-    Category getCategoryById(long categoryId);
-
-    Category updateCategory(Category category);
+    CategoryDTO updateCategory(CategoryDTO categoryDTO);
 
     void deleteCategory(long categoryId);
 }

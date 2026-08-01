@@ -2,17 +2,18 @@ package com.personalfinance.expense_tracker.service;
 
 import java.util.List;
 
-import com.personalfinance.expense_tracker.entity.User;
+import com.personalfinance.expense_tracker.dto.UserDTO;
+
 
 public interface UserService {
 
-	 User registerUser(User user);
+	UserDTO registerUser(UserDTO userDTO);
 
-	    List<User> getAllUsers();
+	List<UserDTO> getAllUsers();
 
-	    User getUserById(long userId);
+	UserDTO getUserById(long userId);
 
-	    User updateUser(User user);
+	UserDTO updateUser(UserDTO userDTO);
 
-	    void deleteUser(long userId);
+	void deleteUser(long userId);
 }

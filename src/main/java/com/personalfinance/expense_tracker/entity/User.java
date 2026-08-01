@@ -23,6 +23,14 @@ public class User {
 	@OneToMany(mappedBy = "user")
 	private List<Expense> expenses;
 	
+	
+	public Long getUserId() {
+	    return userId;
+	}
+
+	public void setUserId(Long userId) {
+	    this.userId = userId;
+	}
 	public String getFullName() {
 		return fullName;
 	}

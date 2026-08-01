@@ -11,43 +11,43 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.personalfinance.expense_tracker.entity.Category;
+import com.personalfinance.expense_tracker.dto.CategoryDTO;
 import com.personalfinance.expense_tracker.service.CategoryService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/categories")
 public class CategoryController {
-	
-	
-	 private final CategoryService categoryService;
 
-	    public CategoryController(CategoryService categoryService) {
-	        this.categoryService = categoryService;
-	    }
+    private final CategoryService categoryService;
 
-	    @PostMapping
-	    public Category addCategory(@RequestBody Category category) {
-	        return categoryService.addCategory(category);
-	    }
+    public CategoryController(CategoryService categoryService) {
+        this.categoryService = categoryService;
+    }
 
-	    @GetMapping
-	    public List<Category> getAllCategories() {
-	        return categoryService.getAllCategories();
-	    }
+    @PostMapping
+    public CategoryDTO addCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
+        return categoryService.addCategory(categoryDTO);
+    }
 
-	    @GetMapping("/{id}")
-	    public Category getCategoryById(@PathVariable long id) {
-	        return categoryService.getCategoryById(id);
-	    }
+    @GetMapping
+    public List<CategoryDTO> getAllCategories() {
+        return categoryService.getAllCategories();
+    }
 
-	    @PutMapping
-	    public Category updateCategory(@RequestBody Category category) {
-	        return categoryService.updateCategory(category);
-	    }
+    @GetMapping("/{id}")
+    public CategoryDTO getCategoryById(@PathVariable long id) {
+        return categoryService.getCategoryById(id);
+    }
 
-	    @DeleteMapping("/{id}")
-	    public void deleteCategory(@PathVariable long id) {
-	        categoryService.deleteCategory(id);
-	    }
+    @PutMapping
+    public CategoryDTO updateCategory(@Valid @RequestBody CategoryDTO categoryDTO) {
+        return categoryService.updateCategory(categoryDTO);
+    }
 
+    @DeleteMapping("/{id}")
+    public void deleteCategory(@PathVariable long id) {
+        categoryService.deleteCategory(id);
+    }
 }

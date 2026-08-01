@@ -2,50 +2,45 @@ package com.personalfinance.expense_tracker.controller;
 
 import java.util.List;
 
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import com.personalfinance.expense_tracker.entity.Expense;
+import com.personalfinance.expense_tracker.dto.ExpenseDTO;
 import com.personalfinance.expense_tracker.service.ExpenseService;
 
+import jakarta.validation.Valid;
+
 @RestController
-@RequestMapping("/api/expense")
+@RequestMapping("/api/expenses")
 public class ExpenseController {
-	
-	private ExpenseService expenseSer;
-	public ExpenseController(ExpenseService expenseSer) {
-		this.expenseSer=expenseSer;
-	}
 
-	
-	 @PostMapping
-	    public Expense addExpense(@RequestBody Expense expense) {
-	        return expenseSer.addExpense(expense);
-	    }
+    private final ExpenseService expenseService;
 
-	    @GetMapping
-	    public List<Expense> getAllExpenses() {
-	        return expenseSer.getAllExpenses();
-	    }
+    public ExpenseController(ExpenseService expenseService) {
+        this.expenseService = expenseService;
+    }
 
-	    @GetMapping("/{id}")
-	    public Expense getExpenseById(@PathVariable long id) {
-	        return expenseSer.getExpenseById(id);
-	    }
+    @PostMapping
+    public ExpenseDTO addExpense(@Valid @RequestBody ExpenseDTO expenseDTO) {
+        return expenseService.addExpense(expenseDTO);
+    }
 
-	    @PutMapping
-	    public Expense updateExpense(@RequestBody Expense expense) {
-	        return expenseSer.updateExpense(expense);
-	    }
+    @GetMapping
+    public List<ExpenseDTO> getAllExpenses() {
+        return expenseService.getAllExpenses();
+    }
 
-	    @DeleteMapping("/{id}")
-	    public void deleteExpense(@PathVariable long id) {
-	        expenseSer.deleteExpense(id);
-	    }
+    @GetMapping("/{id}")
+    public ExpenseDTO getExpenseById(@PathVariable long id) {
+        return expenseService.getExpenseById(id);
+    }
+
+    @PutMapping
+    public ExpenseDTO updateExpense(@Valid @RequestBody ExpenseDTO expenseDTO) {
+        return expenseService.updateExpense(expenseDTO);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteExpense(@PathVariable long id) {
+        expenseService.deleteExpense(id);
+    }
 }

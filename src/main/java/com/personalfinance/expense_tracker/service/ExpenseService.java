@@ -2,19 +2,17 @@ package com.personalfinance.expense_tracker.service;
 
 import java.util.List;
 
-import com.personalfinance.expense_tracker.entity.Expense;
-
+import com.personalfinance.expense_tracker.dto.ExpenseDTO;
 
 public interface ExpenseService {
 
-	 
-	    Expense addExpense(Expense expense);
+    ExpenseDTO addExpense(ExpenseDTO expenseDTO);
 
-	    List<Expense> getAllExpenses();
+    List<ExpenseDTO> getAllExpenses();
 
-	    Expense getExpenseById(long expenseId);
+    ExpenseDTO getExpenseById(long expenseId);
 
-	    Expense updateExpense(Expense expense);
+    ExpenseDTO updateExpense(ExpenseDTO expenseDTO);
 
-	    void deleteExpense(long expenseId);
+    void deleteExpense(long expenseId);
 }
