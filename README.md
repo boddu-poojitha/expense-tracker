@@ -1,114 +1,247 @@
-# 💰 Expense Tracker
+# 💰 Personal Finance & Expense Tracker
 
-A RESTful Expense Tracker application built using **Java**, **Spring Boot**, **Spring Data JPA**, and **MySQL**. This project helps users manage their personal expenses by organizing them into categories and storing expense records efficiently.
+A secure RESTful Expense Tracker application built using **Java**, **Spring Boot**, **Spring Security**, **JWT Authentication**, **Spring Data JPA**, and **MySQL**.
 
-## 🚀 Features
+The application allows users to register, authenticate using JWT tokens, manage expense categories, and record daily expenses through REST APIs.
 
-- User Management (CRUD)
-- Category Management (CRUD)
-- Expense Management (CRUD)
-- DTO Layer
-- Input Validation
+---
+
+# 🚀 Features
+
+### 🔐 Authentication
+- User Registration
+- User Login
+- JWT Token Generation
+- Protected APIs using Spring Security
+- Password Encryption with BCrypt
+
+### 👤 User Management
+- Create User
+- View Users
+- Update User
+- Delete User
+
+### 📂 Category Management
+- Add Category
+- View Categories
+- Update Category
+- Delete Category
+
+### 💵 Expense Management
+- Add Expense
+- View All Expenses
+- View Expense by ID
+- Update Expense
+- Delete Expense
+
+### 🛡 Validation & Exception Handling
+- Bean Validation
 - Global Exception Handling
-- REST API Architecture
-- MySQL Database Integration
+- Custom ResourceNotFoundException
 
-## 🛠️ Tech Stack
+---
 
+# 🛠 Tech Stack
+
+### Backend
 - Java 21
 - Spring Boot
+- Spring Security
+- JWT (JSON Web Token)
 - Spring Data JPA
 - Hibernate
+
+### Database
 - MySQL
+
+### Build Tool
 - Maven
 
-## 📁 Project Structure
+### Testing
+- Postman
+
+---
+
+# 📁 Project Structure
+
+```text
+src
+└── main
+    ├── java
+    │   └── com.personalfinance.expense_tracker
+    │       ├── config
+    │       ├── controller
+    │       ├── dto
+    │       ├── entity
+    │       ├── exception
+    │       ├── mapper
+    │       ├── repository
+    │       ├── security
+    │       ├── service
+    │       └── service.impl
+    └── resources
+        └── application.properties
+```
+
+---
+
+# 🗄 Database Schema
+
+## Tables
+
+- users
+- category
+- expense
+
+## Relationships
 
 ```
-src/main/java
-├── controller
-├── dto
-├── entity
-├── exception
-├── repository
-├── service
-└── service/impl
+User (1) -------- (*) Expense
+
+Category (1) ---- (*) Expense
 ```
 
-## 🗄️ Database
+Each Expense belongs to one User and one Category.
 
-Database: **MySQL**
+---
 
-Tables:
-- User
-- Category
-- Expense
+# 🔑 Authentication Flow
 
-Relationships:
-- One User → Many Expenses
-- One Category → Many Expenses
-- One Expense belongs to one User
-- One Expense belongs to one Category
+1. Register a new user.
+2. Login using email and password.
+3. Receive a JWT Token.
+4. Pass the token in the Authorization header.
 
-## 📌 REST APIs
+```
+Authorization: Bearer <your_token>
+```
 
-### User APIs
+5. Access protected APIs.
 
-- POST `/api/users`
-- GET `/api/users`
-- GET `/api/users/{id}`
-- PUT `/api/users`
-- DELETE `/api/users/{id}`
+---
 
-### Category APIs
+# 📌 REST APIs
 
-- POST `/api/categories`
-- GET `/api/categories`
-- GET `/api/categories/{id}`
-- PUT `/api/categories`
-- DELETE `/api/categories/{id}`
+## Authentication
 
-### Expense APIs
+| Method | Endpoint |
+|---------|-----------|
+| POST | /api/users |
+| POST | /api/auth/login |
 
-- POST `/api/expenses`
-- GET `/api/expenses`
-- GET `/api/expenses/{id}`
-- PUT `/api/expenses`
-- DELETE `/api/expenses/{id}`
+---
 
-## 📋 Current Progress
+## Users
 
-✅ Spring Boot Project Setup
+| Method | Endpoint |
+|---------|-----------|
+| GET | /api/users |
+| GET | /api/users/{id} |
+| PUT | /api/users |
+| DELETE | /api/users/{id} |
 
-✅ MySQL Integration
+---
 
-✅ Entity Relationships
+## Categories
 
-✅ Repository Layer
+| Method | Endpoint |
+|---------|-----------|
+| POST | /api/categories |
+| GET | /api/categories |
+| GET | /api/categories/{id} |
+| PUT | /api/categories |
+| DELETE | /api/categories/{id} |
 
-✅ Service Layer
+---
 
-✅ Controller Layer
+## Expenses
 
-✅ DTO Implementation
+| Method | Endpoint |
+|---------|-----------|
+| POST | /api/expenses |
+| GET | /api/expenses |
+| GET | /api/expenses/{id} |
+| PUT | /api/expenses |
+| DELETE | /api/expenses/{id} |
 
-✅ Validation
+---
 
-✅ Global Exception Handling
+# 📋 Validation
 
-## 🔄 Upcoming Features
+The application validates incoming requests using Bean Validation.
 
-- Spring Security & JWT Authentication
-- Password Encryption
-- User Login & Registration
+Examples:
+
+- Email cannot be empty
+- Password cannot be empty
+- Expense amount must be greater than zero
+- Expense title is required
+- Category name is required
+
+---
+
+# ⚠ Exception Handling
+
+Custom exception handling has been implemented for:
+
+- Resource Not Found (404)
+- Validation Errors (400)
+- Bad Requests
+- Authentication Errors (401)
+
+---
+
+# 🧪 API Testing
+
+All APIs were tested successfully using **Postman**.
+
+Tested Modules:
+
+- Authentication
+- Users
+- Categories
+- Expenses
+
+---
+
+# 📈 Current Status
+
+| Module | Status |
+|---------|--------|
+| Spring Boot Setup | ✅ |
+| MySQL Integration | ✅ |
+| JPA Relationships | ✅ |
+| CRUD Operations | ✅ |
+| DTO Layer | ✅ |
+| Validation | ✅ |
+| Exception Handling | ✅ |
+| JWT Authentication | ✅ |
+| Spring Security | ✅ |
+| API Testing | ✅ |
+
+---
+
+# 🔄 Future Enhancements
+
+- Expense Reports
+- Monthly Analytics
+- Dashboard APIs
+- Pagination & Sorting
+- Search & Filters
 - Swagger/OpenAPI Documentation
+- Docker Deployment
 - Unit Testing (JUnit & Mockito)
-- Docker Support
-- Deployment
 - React Frontend
+- Email Verification
+- Password Reset
 
-## 👩‍💻 Author
+---
+
+# 👩‍💻 Author
 
 **Poojitha Boddu**
 
-GitHub: https://github.com/boddu-poojitha
+GitHub:
+https://github.com/boddu-poojitha
+
+---

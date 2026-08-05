@@ -10,6 +10,7 @@ import com.personalfinance.expense_tracker.entity.Category;
 import com.personalfinance.expense_tracker.entity.Expense;
 import com.personalfinance.expense_tracker.entity.User;
 import com.personalfinance.expense_tracker.exception.ResourceNotFoundException;
+import com.personalfinance.expense_tracker.mapper.ExpenseMapper;
 import com.personalfinance.expense_tracker.repository.CategoryRepository;
 import com.personalfinance.expense_tracker.repository.ExpenseRepository;
 import com.personalfinance.expense_tracker.repository.UserRepository;
@@ -22,9 +23,11 @@ public class ExpenseServiceImpl implements ExpenseService {
     private final UserRepository userRepo;
     private final CategoryRepository categoryRepo;
 
-    public ExpenseServiceImpl(ExpenseRepository expenseRepo,
-                              UserRepository userRepo,
-                              CategoryRepository categoryRepo) {
+    public ExpenseServiceImpl(
+            ExpenseRepository expenseRepo,
+            UserRepository userRepo,
+            CategoryRepository categoryRepo) {
+
         this.expenseRepo = expenseRepo;
         this.userRepo = userRepo;
         this.categoryRepo = categoryRepo;
@@ -33,108 +36,85 @@ public class ExpenseServiceImpl implements ExpenseService {
     @Override
     public ExpenseDTO addExpense(ExpenseDTO expenseDTO) {
 
-        User user = userRepo.findById(expenseDTO.getUserId()).orElse(null);
-        Category category = categoryRepo.findById(expenseDTO.getCategoryId()).orElse(null);
+        User user = userRepo.findById(expenseDTO.getUserId())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "User not found with id: " + expenseDTO.getUserId()));
 
-        Expense expense = new Expense();
-        expense.setTitle(expenseDTO.getTitle());
-        expense.setAmount(expenseDTO.getAmount());
-        expense.setExpenseDate(expenseDTO.getExpenseDate());
-        expense.setNote(expenseDTO.getNote());
-        expense.setPaymentMethod(expenseDTO.getPaymentMethod());
+        Category category = categoryRepo.findById(expenseDTO.getCategoryId())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Category not found with id: " + expenseDTO.getCategoryId()));
+
+        Expense expense = ExpenseMapper.toEntity(expenseDTO);
+
         expense.setUser(user);
         expense.setCategory(category);
 
         Expense savedExpense = expenseRepo.save(expense);
 
-        ExpenseDTO response = new ExpenseDTO();
-        response.setExpenseId(savedExpense.getExpenseId());
-        response.setTitle(savedExpense.getTitle());
-        response.setAmount(savedExpense.getAmount());
-        response.setExpenseDate(savedExpense.getExpenseDate());
-        response.setNote(savedExpense.getNote());
-        response.setPaymentMethod(savedExpense.getPaymentMethod());
-        response.setUserId(savedExpense.getUser().getUserId());
-        response.setCategoryId(savedExpense.getCategory().getCategoryId());
-
-        return response;
+        return ExpenseMapper.toDTO(savedExpense);
     }
 
     @Override
     public List<ExpenseDTO> getAllExpenses() {
 
-        return expenseRepo.findAll().stream().map(expense -> {
-
-            ExpenseDTO dto = new ExpenseDTO();
-            dto.setExpenseId(expense.getExpenseId());
-            dto.setTitle(expense.getTitle());
-            dto.setAmount(expense.getAmount());
-            dto.setExpenseDate(expense.getExpenseDate());
-            dto.setNote(expense.getNote());
-            dto.setPaymentMethod(expense.getPaymentMethod());
-            dto.setUserId(expense.getUser().getUserId());
-            dto.setCategoryId(expense.getCategory().getCategoryId());
-
-            return dto;
-
-        }).collect(Collectors.toList());
+        return expenseRepo.findAll()
+                .stream()
+                .map(ExpenseMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
     public ExpenseDTO getExpenseById(long expenseId) {
 
-        Expense expense = expenseRepo.findById(expenseId).orElseThrow(() -> new ResourceNotFoundException("Expense not found"));
+        Expense expense = expenseRepo.findById(expenseId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Expense not found with id: " + expenseId));
 
-        if (expense == null) {
-            return null;
-        }
-
-        ExpenseDTO dto = new ExpenseDTO();
-        dto.setExpenseId(expense.getExpenseId());
-        dto.setTitle(expense.getTitle());
-        dto.setAmount(expense.getAmount());
-        dto.setExpenseDate(expense.getExpenseDate());
-        dto.setNote(expense.getNote());
-        dto.setPaymentMethod(expense.getPaymentMethod());
-        dto.setUserId(expense.getUser().getUserId());
-        dto.setCategoryId(expense.getCategory().getCategoryId());
-
-        return dto;
+        return ExpenseMapper.toDTO(expense);
     }
 
     @Override
     public ExpenseDTO updateExpense(ExpenseDTO expenseDTO) {
 
-        User user = userRepo.findById(expenseDTO.getUserId()).orElse(null);
-        Category category = categoryRepo.findById(expenseDTO.getCategoryId()).orElse(null);
+        Expense existingExpense = expenseRepo.findById(expenseDTO.getExpenseId())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Expense not found with id: " + expenseDTO.getExpenseId()));
 
-        Expense expense = new Expense();
-        expense.setExpenseId(expenseDTO.getExpenseId());
-        expense.setTitle(expenseDTO.getTitle());
-        expense.setAmount(expenseDTO.getAmount());
-        expense.setExpenseDate(expenseDTO.getExpenseDate());
-        expense.setNote(expenseDTO.getNote());
-        expense.setPaymentMethod(expenseDTO.getPaymentMethod());
-        expense.setUser(user);
-        expense.setCategory(category);
+        User user = userRepo.findById(expenseDTO.getUserId())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "User not found with id: " + expenseDTO.getUserId()));
 
-        Expense updatedExpense = expenseRepo.save(expense);
+        Category category = categoryRepo.findById(expenseDTO.getCategoryId())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Category not found with id: " + expenseDTO.getCategoryId()));
 
-        ExpenseDTO response = new ExpenseDTO();
-        response.setExpenseId(updatedExpense.getExpenseId());
-        response.setTitle(updatedExpense.getTitle());
-        response.setAmount(updatedExpense.getAmount());
-        response.setExpenseDate(updatedExpense.getExpenseDate());
-        response.setNote(updatedExpense.getNote());
-        response.setPaymentMethod(updatedExpense.getPaymentMethod());
-        response.setUserId(updatedExpense.getUser().getUserId());
-        response.setCategoryId(updatedExpense.getCategory().getCategoryId());
+        existingExpense.setTitle(expenseDTO.getTitle());
+        existingExpense.setAmount(expenseDTO.getAmount());
+        existingExpense.setExpenseDate(expenseDTO.getExpenseDate());
+        existingExpense.setNote(expenseDTO.getNote());
+        existingExpense.setPaymentMethod(expenseDTO.getPaymentMethod());
+        existingExpense.setUser(user);
+        existingExpense.setCategory(category);
 
-        return response;
+        Expense updatedExpense = expenseRepo.save(existingExpense);
+
+        return ExpenseMapper.toDTO(updatedExpense);
     }
 
     @Override
     public void deleteExpense(long expenseId) {
-        expenseRepo.deleteById(expenseId);
+
+        Expense expense = expenseRepo.findById(expenseId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Expense not found with id: " + expenseId));
+
+        expenseRepo.delete(expense);
     }
 }

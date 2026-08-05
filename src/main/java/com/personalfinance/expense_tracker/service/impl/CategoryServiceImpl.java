@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.personalfinance.expense_tracker.dto.CategoryDTO;
 import com.personalfinance.expense_tracker.entity.Category;
 import com.personalfinance.expense_tracker.exception.ResourceNotFoundException;
+import com.personalfinance.expense_tracker.mapper.CategoryMapper;
 import com.personalfinance.expense_tracker.repository.CategoryRepository;
 import com.personalfinance.expense_tracker.service.CategoryService;
 
@@ -23,73 +24,55 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDTO addCategory(CategoryDTO categoryDTO) {
 
-        Category category = new Category();
-        category.setCategoryName(categoryDTO.getCategoryName());
-        category.setDescription(categoryDTO.getDescription());
+        Category category = CategoryMapper.toEntity(categoryDTO);
 
         Category savedCategory = categoryRepo.save(category);
 
-        CategoryDTO response = new CategoryDTO();
-        response.setCategoryId(savedCategory.getCategoryId());
-        response.setCategoryName(savedCategory.getCategoryName());
-        response.setDescription(savedCategory.getDescription());
-
-        return response;
+        return CategoryMapper.toDTO(savedCategory);
     }
 
     @Override
     public List<CategoryDTO> getAllCategories() {
 
-        List<Category> categories = categoryRepo.findAll();
-
-        return categories.stream().map(category -> {
-
-            CategoryDTO dto = new CategoryDTO();
-            dto.setCategoryId(category.getCategoryId());
-            dto.setCategoryName(category.getCategoryName());
-            dto.setDescription(category.getDescription());
-
-            return dto;
-
-        }).collect(Collectors.toList());
+        return categoryRepo.findAll()
+                .stream()
+                .map(CategoryMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
     public CategoryDTO getCategoryById(long categoryId) {
 
-    	Category category = categoryRepo.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category not found"));
-        if (category == null) {
-            return null;
-        }
+    	Category category = categoryRepo.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category not found with id: " + categoryId));
 
-        CategoryDTO dto = new CategoryDTO();
-        dto.setCategoryId(category.getCategoryId());
-        dto.setCategoryName(category.getCategoryName());
-        dto.setDescription(category.getDescription());
-
-        return dto;
+    	return CategoryMapper.toDTO(category);
     }
 
     @Override
     public CategoryDTO updateCategory(CategoryDTO categoryDTO) {
 
-        Category category = new Category();
-        category.setCategoryId(categoryDTO.getCategoryId());
+        Category category = categoryRepo.findById(categoryDTO.getCategoryId())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Category not found with id: "
+                                        + categoryDTO.getCategoryId()));
+
         category.setCategoryName(categoryDTO.getCategoryName());
         category.setDescription(categoryDTO.getDescription());
 
         Category updatedCategory = categoryRepo.save(category);
 
-        CategoryDTO response = new CategoryDTO();
-        response.setCategoryId(updatedCategory.getCategoryId());
-        response.setCategoryName(updatedCategory.getCategoryName());
-        response.setDescription(updatedCategory.getDescription());
-
-        return response;
+        return CategoryMapper.toDTO(updatedCategory);
     }
 
     @Override
     public void deleteCategory(long categoryId) {
-        categoryRepo.deleteById(categoryId);
+
+        Category category = categoryRepo.findById(categoryId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Category not found with id: " + categoryId));
+
+        categoryRepo.delete(category);
     }
 }

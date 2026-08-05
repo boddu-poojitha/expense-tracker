@@ -3,99 +3,92 @@ package com.personalfinance.expense_tracker.service.impl;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.personalfinance.expense_tracker.dto.UserDTO;
 import com.personalfinance.expense_tracker.entity.User;
 import com.personalfinance.expense_tracker.exception.ResourceNotFoundException;
+import com.personalfinance.expense_tracker.mapper.UserMapper;
 import com.personalfinance.expense_tracker.repository.UserRepository;
 import com.personalfinance.expense_tracker.service.UserService;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final UserRepository userRepo;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepo) {
-        this.userRepo = userRepo;
+    public UserServiceImpl(UserRepository userRepository,
+                           PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
     public UserDTO registerUser(UserDTO userDTO) {
 
-        User user = new User();
-        user.setFullName(userDTO.getFullName());
-        user.setEmail(userDTO.getEmail());
-        user.setPassword(userDTO.getPassword());
+        System.out.println("Step 1");
 
-        User savedUser = userRepo.save(user);
+        User user = UserMapper.toEntity(userDTO);
 
-        UserDTO response = new UserDTO();
-        response.setUserId(savedUser.getUserId());
-        response.setFullName(savedUser.getFullName());
-        response.setEmail(savedUser.getEmail());
-        response.setPassword(savedUser.getPassword());
+        System.out.println("Step 2");
 
-        return response;
+        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+
+        System.out.println("Step 3");
+
+        User savedUser = userRepository.save(user);
+
+        System.out.println("Step 4");
+
+        return UserMapper.toDTO(savedUser);
     }
 
     @Override
     public List<UserDTO> getAllUsers() {
 
-        List<User> users = userRepo.findAll();
+        List<User> users = userRepository.findAll();
 
-        return users.stream().map(user -> {
-
-            UserDTO dto = new UserDTO();
-            dto.setUserId(user.getUserId());
-            dto.setFullName(user.getFullName());
-            dto.setEmail(user.getEmail());
-            dto.setPassword(user.getPassword());
-
-            return dto;
-
-        }).collect(Collectors.toList());
+        return users.stream()
+                .map(UserMapper::toDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
     public UserDTO getUserById(long userId) {
 
-    	User user = userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found"));
-        if (user == null) {
-            return null;
-        }
+        User user = userRepository.findById(userId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("User not found with id: " + userId));
 
-        UserDTO dto = new UserDTO();
-        dto.setUserId(user.getUserId());
-        dto.setFullName(user.getFullName());
-        dto.setEmail(user.getEmail());
-        dto.setPassword(user.getPassword());
-
-        return dto;
+        return UserMapper.toDTO(user);
     }
 
     @Override
     public UserDTO updateUser(UserDTO userDTO) {
 
-        User user = new User();
-        user.setUserId(userDTO.getUserId());
-        user.setFullName(userDTO.getFullName());
-        user.setEmail(userDTO.getEmail());
-        user.setPassword(userDTO.getPassword());
+        userRepository.findById(userDTO.getUserId())
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("User not found with id: " + userDTO.getUserId()));
 
-        User updatedUser = userRepo.save(user);
+        User user = UserMapper.toEntity(userDTO);
 
-        UserDTO response = new UserDTO();
-        response.setUserId(updatedUser.getUserId());
-        response.setFullName(updatedUser.getFullName());
-        response.setEmail(updatedUser.getEmail());
-        response.setPassword(updatedUser.getPassword());
+        // Encode password before updating
+        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
 
-        return response;
+        User updatedUser = userRepository.save(user);
+
+        return UserMapper.toDTO(updatedUser);
     }
 
     @Override
     public void deleteUser(long userId) {
-        userRepo.deleteById(userId);
+
+        userRepository.findById(userId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("User not found with id: " + userId));
+
+        userRepository.deleteById(userId);
     }
 }
