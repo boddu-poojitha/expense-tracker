@@ -10,12 +10,8 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
 @Service
-public class JwtService {
-
-    // Secret key (must be at least 32 characters)
-    private static final String SECRET_KEY =
-            "mysecretkeymysecretkeymysecretkey12";
-
+public class JwtService {    
+	private static final String SECRET_KEY = System.getenv("JWT_SECRET");
     // Generate signing key
     private Key getSignInKey() {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());

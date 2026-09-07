@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.personalfinance.expense_tracker.dto.CategoryDTO;
 import com.personalfinance.expense_tracker.service.CategoryService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/categories")
+@SecurityRequirement(name = "bearerAuth")
 public class CategoryController {
 
     private final CategoryService categoryService;

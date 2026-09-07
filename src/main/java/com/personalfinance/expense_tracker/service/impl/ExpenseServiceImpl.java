@@ -1,11 +1,14 @@
 package com.personalfinance.expense_tracker.service.impl;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.personalfinance.expense_tracker.dto.CategoryExpenseDTO;
 import com.personalfinance.expense_tracker.dto.ExpenseDTO;
+import com.personalfinance.expense_tracker.dto.MonthlyExpenseDTO;
 import com.personalfinance.expense_tracker.entity.Category;
 import com.personalfinance.expense_tracker.entity.Expense;
 import com.personalfinance.expense_tracker.entity.User;
@@ -15,6 +18,7 @@ import com.personalfinance.expense_tracker.repository.CategoryRepository;
 import com.personalfinance.expense_tracker.repository.ExpenseRepository;
 import com.personalfinance.expense_tracker.repository.UserRepository;
 import com.personalfinance.expense_tracker.service.ExpenseService;
+import com.personalfinance.expense_tracker.dto.TotalExpenseDTO;
 
 @Service
 public class ExpenseServiceImpl implements ExpenseService {
@@ -116,5 +120,98 @@ public class ExpenseServiceImpl implements ExpenseService {
                                 "Expense not found with id: " + expenseId));
 
         expenseRepo.delete(expense);
+    }
+    
+    
+    @Override
+    public List<ExpenseDTO> getExpensesByUser(long userId) {
+
+        return expenseRepo.findByUser_UserId(userId)
+                .stream()
+                .map(ExpenseMapper::toDTO)
+                .toList();
+    }
+
+    @Override
+    public List<ExpenseDTO> getExpensesByCategory(long categoryId) {
+
+        return expenseRepo.findByCategory_CategoryId(categoryId)
+                .stream()
+                .map(ExpenseMapper::toDTO)
+                .toList();
+    }
+
+    @Override
+    public List<ExpenseDTO> getExpensesByDate(LocalDate startDate,
+                                              LocalDate endDate) {
+
+        return expenseRepo.findByExpenseDateBetween(startDate, endDate)
+                .stream()
+                .map(ExpenseMapper::toDTO)
+                .toList();
+    }
+
+    @Override
+    public List<ExpenseDTO> getExpensesByPaymentMethod(String paymentMethod) {
+
+        return expenseRepo.findByPaymentMethod(paymentMethod)
+                .stream()
+                .map(ExpenseMapper::toDTO)
+                .toList();
+    }
+    
+    @Override
+    public TotalExpenseDTO getTotalExpense() {
+
+        double total = expenseRepo.getTotalExpense();
+
+        return new TotalExpenseDTO(total);
+    }
+    
+    @Override
+    public List<CategoryExpenseDTO> getCategoryExpenseSummary() {
+
+        return expenseRepo.getCategoryExpenseSummary();
+    }
+    
+    
+    @Override
+    public List<MonthlyExpenseDTO> getMonthlyExpenseSummary() {
+
+        return expenseRepo.getMonthlyExpenseSummary();
+    }
+    
+    
+    @Override
+    public TotalExpenseDTO getTodayExpense() {
+
+        double total = expenseRepo.getTodayExpense();
+
+        return new TotalExpenseDTO(total);
+    }
+    
+    @Override
+    public TotalExpenseDTO getThisMonthExpense() {
+
+        double total = expenseRepo.getThisMonthExpense();
+
+        return new TotalExpenseDTO(total);
+    }
+    
+    
+    @Override
+    public List<ExpenseDTO> getRecentExpenses() {
+
+        List<Expense> expenses =
+                expenseRepo.findTop5ByOrderByExpenseDateDescExpenseIdDesc();
+
+        return expenses.stream()
+                .map(ExpenseMapper::toDTO)
+                .toList();
+    }
+    
+    @Override
+    public long getExpenseCount() {
+        return expenseRepo.getExpenseCount();
     }
 }

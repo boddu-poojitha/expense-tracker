@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.personalfinance.expense_tracker.dto.UserDTO;
 import com.personalfinance.expense_tracker.service.UserService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/users")
+@SecurityRequirement(name = "bearerAuth")
 public class UserController {
 
     private final UserService userService;

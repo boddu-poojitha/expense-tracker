@@ -10,8 +10,17 @@ import com.personalfinance.expense_tracker.dto.AuthResponse;
 import com.personalfinance.expense_tracker.dto.LoginRequest;
 import com.personalfinance.expense_tracker.service.JwtService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.web.server.ResponseStatusException;
+
+
+
+
 @RestController
 @RequestMapping("/api/auth")
+@SecurityRequirement(name = "bearerAuth")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
@@ -41,10 +50,14 @@ public class AuthController {
                 return new AuthResponse(token);
             }
 
-            throw new RuntimeException("Invalid Credentials");
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Invalid Credentials");
 
         } catch (AuthenticationException e) {
-            throw new RuntimeException("Invalid Email or Password");
+            throw new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Invalid Email or Password");
         }
     }
 }
